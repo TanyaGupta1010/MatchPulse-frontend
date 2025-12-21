@@ -1,20 +1,20 @@
 export default function MatchCard({ match }: any) {
   return (
-    <div className="border rounded-md p-4 bg-white shadow-sm">
-      <h3 className="font-semibold text-sm mb-1">
-        {match?.name || "Match"}
-      </h3>
-
+    <div className="border rounded-md p-3 bg-white hover:shadow-sm transition">
       <p className="text-xs text-gray-500 mb-1">
-        {match?.venue || "Venue"}
+        {match.matchType?.toUpperCase()} • {match.venue}
       </p>
 
-      <p className="text-sm font-medium text-red-600 mb-1">
-        {match?.status || "Status"}
+      <p className="text-sm font-semibold leading-snug">
+        {match.name}
       </p>
 
-      <p className="text-xs text-gray-400">
-        {match?.date || ""}
+      <p className="text-sm font-medium text-gray-700 mt-1">
+        {match.status}
+      </p>
+
+      <p className="text-xs text-gray-400 mt-2">
+        {match.date}
       </p>
     </div>
   );

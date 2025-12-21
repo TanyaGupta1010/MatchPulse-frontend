@@ -5,3 +5,11 @@
 body {
   background-color: #f9fafb;
 }
+/* Hide scrollbar for horizontal live strip */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
