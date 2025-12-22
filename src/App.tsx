@@ -1,16 +1,24 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
+import Series from "./pages/Series";
+import Teams from "./pages/Teams";
 import MatchDetails from "./pages/MatchDetails";
 
-export default function App() {
+function App() {
   return (
-    <BrowserRouter>
+    <>
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/match/:id" element={<MatchDetails />} />
-      </Routes>
-    </BrowserRouter>
+      <div className="max-w-7xl mx-auto px-4">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/series" element={<Series />} />
+          <Route path="/teams" element={<Teams />} />
+          <Route path="/match/:id" element={<MatchDetails />} />
+        </Routes>
+      </div>
+    </>
   );
 }
+
+export default App;

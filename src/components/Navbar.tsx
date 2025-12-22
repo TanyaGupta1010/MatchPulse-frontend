@@ -1,21 +1,51 @@
-export default function Navbar() {
+import { NavLink } from "react-router-dom";
+
+const Navbar = () => {
   return (
     <nav className="border-b bg-white">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex gap-6 items-center">
-        <h1 className="text-xl font-bold text-green-600">
+      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-8">
+        <NavLink
+          to="/"
+          className="text-xl font-bold text-green-600"
+        >
           MatchPulse
-        </h1>
+        </NavLink>
 
-        <a className="text-sm font-medium text-gray-700 hover:text-black">
+        <NavLink
+          to="/"
+          className={({ isActive }) =>
+            isActive
+              ? "text-green-600 font-medium border-b-2 border-green-600 pb-3"
+              : "text-gray-700 hover:text-green-600"
+          }
+        >
           Live Scores
-        </a>
-        <a className="text-sm font-medium text-gray-700 hover:text-black">
+        </NavLink>
+
+        <NavLink
+          to="/series"
+          className={({ isActive }) =>
+            isActive
+              ? "text-green-600 font-medium border-b-2 border-green-600 pb-3"
+              : "text-gray-700 hover:text-green-600"
+          }
+        >
           Series
-        </a>
-        <a className="text-sm font-medium text-gray-700 hover:text-black">
+        </NavLink>
+
+        <NavLink
+          to="/teams"
+          className={({ isActive }) =>
+            isActive
+              ? "text-green-600 font-medium border-b-2 border-green-600 pb-3"
+              : "text-gray-700 hover:text-green-600"
+          }
+        >
           Teams
-        </a>
+        </NavLink>
       </div>
     </nav>
   );
-}
+};
+
+export default Navbar;
