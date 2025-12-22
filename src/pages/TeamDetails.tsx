@@ -11,9 +11,9 @@ const TeamDetails = () => {
       .then((res) => res.json())
       .then((data) => {
         const filtered = data.matches.filter((m: any) =>
-          m.teams?.includes(teamName)
+          m.teams.includes(teamName)
         );
-        setMatches(filtered);
+        setMatches(filtered.slice(0, 5)); // recent 5
       });
   }, [teamName]);
 
@@ -24,20 +24,15 @@ const TeamDetails = () => {
       </Link>
 
       <h1 className="text-2xl font-bold mt-2">{teamName}</h1>
-
-      <h2 className="text-lg font-semibold mt-6 mb-3">
+      <p className="text-gray-600 mt-1">
         Recent Matches
-      </h2>
+      </p>
 
-      {matches.length === 0 ? (
-        <p className="text-gray-500">No matches found</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {matches.map((match) => (
-            <MatchCard key={match.id} match={match} />
-          ))}
-        </div>
-      )}
+      <div className="grid md:grid-cols-2 gap-4 mt-4">
+        {matches.map((match) => (
+          <MatchCard key={match.id} match={match} />
+        ))}
+      </div>
     </div>
   );
 };
