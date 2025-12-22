@@ -1,38 +1,53 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { getMatches } from "../services/matchService";
 import MatchCard from "../components/MatchCard";
+
+interface Match {
+  id: string;
+  name: string;
+  teams: string[];
+}
 
 const TeamDetails = () => {
   const { teamName } = useParams();
-  const [matches, setMatches] = useState<any[]>([]);
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/matches")
-      .then((res) => res.json())
-      .then((data) => {
-        const filtered = data.matches.filter((m: any) =>
-          m.teams.includes(teamName)
-        );
-        setMatches(filtered.slice(0, 5)); // recent 5
-      });
+    const fetchTeamMatches = async () => {
+      const res = await getMatches();
+      const filtered = res.matches.filter((m: Match) =>
+        m.teams.includes(teamName || "")
+      );
+      setMatches(filtered);
+      setLoading(false);
+    };
+
+    fetchTeamMatches();
   }, [teamName]);
 
+  if (loading) return <p className="p-6">Loading team details...</p>;
+
   return (
-    <div className="mt-6">
-      <Link to="/teams" className="text-blue-600 text-sm">
+    <div className="max-w-6xl mx-auto px-4 py-6">
+      <Link to="/teams" className="text-blue-500 text-sm">
         ← Back to Teams
       </Link>
 
-      <h1 className="text-2xl font-bold mt-2">{teamName}</h1>
-      <p className="text-gray-600 mt-1">
-        Recent Matches
-      </p>
+      <h1 className="text-2xl font-semibold mt-2 mb-4">
+        {teamName}
+      </h1>
 
-      <div className="grid md:grid-cols-2 gap-4 mt-4">
-        {matches.map((match) => (
-          <MatchCard key={match.id} match={match} />
-        ))}
-      </div>
+      {matches.length === 0 ? (
+        <p className="text-gray-500">No matches found.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {matches.map((match) => (
+            <MatchCard key={match.id} match={match as any} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
