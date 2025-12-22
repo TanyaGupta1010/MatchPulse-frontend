@@ -15,37 +15,26 @@ const MatchDetails = () => {
   const { id } = useParams();
   const [match, setMatch] = useState<Match | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<"scorecard" | "commentary" | "info">(
+    "scorecard"
+  );
 
   useEffect(() => {
-    const fetchMatch = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/matches");
-        const data = await res.json();
-
+    fetch("http://localhost:5000/api/matches")
+      .then((res) => res.json())
+      .then((data) => {
         const found = data.matches.find((m: Match) => m.id === id);
         setMatch(found || null);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMatch();
+      })
+      .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) {
-    return <p className="mt-6 text-gray-500">Loading match details…</p>;
-  }
-
-  if (!match) {
-    return <p className="mt-6 text-red-500">Match not found.</p>;
-  }
+  if (loading) return <p className="mt-6">Loading match…</p>;
+  if (!match) return <p className="mt-6">Match not found</p>;
 
   return (
     <div className="mt-6">
-      {/* Back */}
-      <Link to="/" className="text-blue-600 text-sm hover:underline">
+      <Link to="/" className="text-blue-600 text-sm">
         ← Back
       </Link>
 
@@ -57,39 +46,77 @@ const MatchDetails = () => {
 
       {/* Tabs */}
       <div className="flex gap-6 mt-6 border-b">
-        <span className="pb-2 border-b-2 border-green-600 font-medium">
-          Scorecard
-        </span>
-        <span className="pb-2 text-gray-500">Commentary</span>
-        <span className="pb-2 text-gray-500">Info</span>
+        {["scorecard", "commentary", "info"].map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t as any)}
+            className={`pb-2 capitalize ${
+              tab === t
+                ? "border-b-2 border-green-600 font-medium"
+                : "text-gray-500"
+            }`}
+          >
+            {t}
+          </button>
+        ))}
       </div>
 
-      {/* Content */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-        {/* Left Card */}
-        <div className="md:col-span-2 bg-white border rounded-lg p-4">
-          <h2 className="font-semibold mb-2">Match Status</h2>
-          <p className="text-red-600 font-medium">{match.status}</p>
-
-          <div className="mt-4">
-            <p className="text-sm text-gray-600">Teams</p>
-            <p className="font-medium">
-              {match.teams[0]} vs {match.teams[1]}
-            </p>
-          </div>
-        </div>
-
-        {/* Right Card */}
-        <div className="bg-white border rounded-lg p-4">
-          <p className="text-sm text-gray-600">Date</p>
-          <p className="font-medium">{match.date}</p>
-
-          <p className="text-sm text-gray-600 mt-4">Venue</p>
-          <p className="font-medium">{match.venue}</p>
-        </div>
+      {/* Tab Content */}
+      <div className="mt-6">
+        {tab === "scorecard" && <Scorecard match={match} />}
+        {tab === "commentary" && <Commentary match={match} />}
+        {tab === "info" && <Info match={match} />}
       </div>
     </div>
   );
 };
 
 export default MatchDetails;
+
+//
+// ⬇️⬇️⬇️ TAB COMPONENTS (SAME FILE) ⬇️⬇️⬇️
+//
+
+const Scorecard = ({ match }: { match: Match }) => {
+  return (
+    <div className="bg-white border rounded-lg p-4">
+      <h2 className="font-semibold mb-2">Match Status</h2>
+      <p className="text-red-600 font-medium">{match.status}</p>
+
+      <p className="mt-3 text-sm">
+        {match.teams[0]} vs {match.teams[1]}
+      </p>
+    </div>
+  );
+};
+
+const Commentary = ({ match }: { match: Match }) => {
+  return (
+    <div className="bg-white border rounded-lg p-4 space-y-2 text-sm">
+      <p>🟢 Match started at {match.venue}</p>
+      <p>🔔 {match.status}</p>
+      <p>📅 Played on {match.date}</p>
+      <p>🏏 Teams: {match.teams.join(" vs ")}</p>
+    </div>
+  );
+};
+
+const Info = ({ match }: { match: Match }) => {
+  return (
+    <div className="bg-white border rounded-lg p-4 text-sm space-y-2">
+      <p>
+        <span className="text-gray-500">Match:</span> {match.name}
+      </p>
+      <p>
+        <span className="text-gray-500">Format:</span>{" "}
+        {match.matchType.toUpperCase()}
+      </p>
+      <p>
+        <span className="text-gray-500">Venue:</span> {match.venue}
+      </p>
+      <p>
+        <span className="text-gray-500">Date:</span> {match.date}
+      </p>
+    </div>
+  );
+};
