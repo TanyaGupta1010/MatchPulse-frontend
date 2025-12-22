@@ -1,80 +1,71 @@
 import { useEffect, useState } from "react";
 import MatchCard from "../components/MatchCard";
-import LiveMatchCard from "../components/LiveMatchCard";
 import { getMatches } from "../services/matchService";
 
-export default function Home() {
-  const [matches, setMatches] = useState<any[]>([]);
+interface Match {
+  id: string;
+  name: string;
+  venue: string;
+  status: string;
+  date: string;
+  teams: string[];
+}
+
+const Home = () => {
+  const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    getMatches()
-      .then((data) => {
-        setMatches(data?.matches || []);
-      })
-      .catch((err) => {
-        console.error("Error fetching matches:", err);
-        setMatches([]);
-      })
-      .finally(() => {
+    const fetchMatches = async () => {
+      try {
+        const res = await getMatches();
+        setMatches(res.matches || []);
+      } catch (err) {
+        console.error(err);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchMatches();
   }, []);
 
-  if (loading) {
-    return (
-      <p className="mt-6 text-center text-gray-500">
-        Loading matches...
-      </p>
-    );
-  }
-
-  // 🔴 LIVE MATCHES (real logic)
-  const liveMatches = matches.filter(
-    (m) => m.matchStarted && !m.matchEnded
-  );
-
-  // 📃 RECENT MATCHES
-  const recentMatches = matches.filter(
-    (m) => !liveMatches.includes(m)
+  const filteredMatches = matches.filter((match) =>
+    match.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 mt-6">
-      
-      {/* 🔴 LIVE MATCHES SECTION */}
-      {liveMatches.length > 0 ? (
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-3">
-            Live Matches
-          </h2>
+    <div className="max-w-6xl mx-auto px-4 py-6">
+      <h1 className="text-2xl font-semibold mb-4">Live & Recent Matches</h1>
 
-          <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
-            {liveMatches.map((match) => (
-              <LiveMatchCard key={match.id} match={match} />
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className="mb-6 text-sm text-gray-400">
-          No live matches right now
-        </div>
+      {/* Search */}
+      <input
+        type="text"
+        placeholder="Search matches..."
+        className="w-full mb-6 px-4 py-2 border rounded-md focus:outline-none focus:ring"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      {/* Loading */}
+      {loading && (
+        <p className="text-gray-500">Loading matches...</p>
       )}
 
-      {/* 📃 RECENT MATCHES SECTION */}
-      <h2 className="text-lg font-semibold mb-4">
-        Live & Recent Matches
-      </h2>
-
-      {recentMatches.length === 0 ? (
+      {/* Empty */}
+      {!loading && filteredMatches.length === 0 && (
         <p className="text-gray-500">No matches found</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {recentMatches.map((match) => (
-            <MatchCard key={match.id} match={match} />
-          ))}
-        </div>
       )}
+
+      {/* Match Cards */}
+      <div className="grid md:grid-cols-2 gap-4">
+        {filteredMatches.map((match) => (
+          <MatchCard key={match.id} match={match} />
+        ))}
+      </div>
     </div>
   );
-}
+};
+
+export default Home;
