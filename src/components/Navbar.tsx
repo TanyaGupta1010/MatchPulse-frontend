@@ -8,7 +8,7 @@ const Navbar = () => {
         {/* Logo + Brand */}
         <Link to="/" className="flex items-center gap-2">
           <img
-            src="/public/logo.png"
+            src="/logo.png"
             alt="MatchPulse Logo"
             className="h-8 w-8"
           />
