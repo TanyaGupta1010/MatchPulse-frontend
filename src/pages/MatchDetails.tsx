@@ -19,7 +19,7 @@ const MatchDetails = () => {
   >("scorecard");
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/matches")
+    fetch(`${import.meta.env.VITE_API_URL}/api/matches`)
       .then((res) => res.json())
       .then((data) => {
         const found = data.matches.find((m: Match) => m.id === id);

@@ -9,7 +9,7 @@ const SeriesDetails = () => {
 
   useEffect(() => {
     // fetch series
-    fetch("http://localhost:5000/api/series")
+    fetch(`${import.meta.env.VITE_API_URL}/api/matches`)
       .then((res) => res.json())
       .then((data) => {
         const found = data.series.find((s: any) => s.id === id);

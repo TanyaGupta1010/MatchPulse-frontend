@@ -8,7 +8,7 @@ const SeriesPage = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/series")
+    fetch(`${import.meta.env.VITE_API_URL}/api/matches`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch series");
         return res.json();
